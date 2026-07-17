@@ -1,0 +1,101 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Rekomendasi{% endblock %}
+{% block page_title %}Rekomendasi - {{ display_name }}{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'admin_recommendation' %}" class="btn btn-outline-light btn-sm mb-3">
+    <i class="bi bi-arrow-left"></i> Kembali
+</a>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p class="mb-1"><strong>{{ display_name }}</strong></p>
+        <p class="mb-0"><strong>Jumlah Rating:</strong> {{ rating_count }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Rekomendasi Movie berdasarkan Perhitungan Jaccard &amp; Pearson</h5>
+    </div>
+    <div class="card-body">
+
+        <div class="table-toolbar">
+            <span></span>
+            <form method="get" class="search-box w-100">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Cari judul movie...">
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Genre</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                        <td>{{ row.movie.id }}</td>
+                        <td>{{ row.movie.title }}</td>
+                        <td>
+                            {% for genre in row.movie.genres.all %}
+                                <span class="badge bg-primary">{{ genre.name }}</span>
+                            {% empty %}-{% endfor %}
+                        </td>
+                        <td>
+                            {% if row.score != None %}{{ row.score|floatformat:3 }}{% else %}-{% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center">Tidak ada rekomendasi yang bisa dihasilkan.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.paginator.count %}
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <span class="text-muted small">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ total }} entries
+            </span>
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Previous</a>
+                        {% else %}
+                            <span class="page-link">Previous</span>
+                        {% endif %}
+                    </li>
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ query }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">Next</a>
+                        {% else %}
+                            <span class="page-link">Next</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

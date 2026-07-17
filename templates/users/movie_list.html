@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MovieHub | Semua Movie{% endblock %}
+{% block nav_movies %}active{% endblock %}
+
+{% block content %}
+
+<section class="movie-section" style="padding-top: 140px;">
+    <div class="container">
+
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Semua Movie</h2>
+                <div class="line"></div>
+            </div>
+        </div>
+
+        <form class="row g-2 mb-4" method="GET" action="{% url 'movie_list' %}">
+            <div class="col-md-7 col-8">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ q }}"
+                    class="form-control"
+                    placeholder="cari judul atau genre movie"
+                    style="background:#16161f;border:1px solid rgba(255,255,255,0.08);color:#fff;">
+            </div>
+            <div class="col-md-3 col-4">
+                <select name="genre" class="form-select" style="background:#16161f;border:1px solid rgba(255,255,255,0.08);color:#fff;">
+                    <option value="">Semua Genre</option>
+                    {% for g in genres %}
+                    <option value="{{ g.id }}" {% if selected_genre == g.id|stringformat:"s" %}selected{% endif %}>
+                        {{ g.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 col-12">
+                <button type="submit" class="btn-movie w-100 justify-content-center">Cari</button>
+            </div>
+        </form>
+
+        <div class="row g-4">
+            {% for movie in page_obj %}
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6">
+                <div class="movie-card">
+                    <div class="movie-image">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster }}" alt="{{ movie.title }}" loading="lazy" referrerpolicy="no-referrer">
+                        {% else %}
+                            <div class="no-poster"><i class="bi bi-film"></i></div>
+                        {% endif %}
+                    </div>
+                    <div class="movie-info">
+                        <h5>{{ movie.title }}</h5>
+                        <div class="movie-bottom">
+                            <span class="movie-rating">
+                                ⭐ {{ movie.avg_rating|floatformat:1|default:"-" }}
+                            </span>
+                            <a href="{% url 'movie_detail' movie.pk %}">Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-movie">
+                    <i class="bi bi-film"></i>
+                    <h4>Movie tidak ditemukan.</h4>
+                    <p>Coba kata kunci atau genre lain.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="mt-5" aria-label="Pagination">
+            <ul class="pagination justify-content-center flex-wrap">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">&laquo;</a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">&raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

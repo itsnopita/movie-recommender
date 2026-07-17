@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Edit Profil{% endblock %}
+{% block page_title %}Edit Profil{% endblock %}
+
+{% block content %}
+
+<div class="card" style="max-width: 480px;">
+    <div class="card-body text-center">
+
+        {% if profile.photo %}
+            <img src="{{ profile.photo.url }}" alt="Foto profil"
+                 style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--admin-purple);margin-bottom:16px;">
+        {% else %}
+            <div style="width:120px;height:120px;border-radius:50%;background:var(--admin-purple-soft);
+                        display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="bi bi-person-fill" style="font-size:56px;color:var(--admin-purple);"></i>
+            </div>
+        {% endif %}
+
+        <h5 class="mb-1">{{ request.user.username }}</h5>
+        <p class="text-muted small mb-4">Administrator</p>
+
+        <form method="post" enctype="multipart/form-data" class="text-start">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Ganti Foto Profil</label>
+                <input type="file" name="photo" accept="image/*" class="form-control" required>
+                <small class="text-muted">Format JPG/PNG, disarankan foto persegi (misal 400x400px).</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-upload"></i> Simpan Foto
+            </button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

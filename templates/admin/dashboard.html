@@ -1,0 +1,124 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="welcome-banner">
+    <div>
+        <h4>Welcome back, Admin! 👋</h4>
+        <p>Here's what's happening with your movie recommender system.</p>
+    </div>
+    <div class="welcome-icon">🎬🍿</div>
+</div>
+
+<div class="row">
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-film"></i></div>
+                <h6>Total Movies</h6>
+                <h2>{{ total_movies }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-tags-fill"></i></div>
+                <h6>Total Tags</h6>
+                <h2>{{ total_tags }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
+                <h6>Total Ratings</h6>
+                <h2>{{ total_ratings }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                <h6>Total Users</h6>
+                <h2>{{ total_users }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="card mt-3">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Latest Movies</h5>
+        <a href="{% url 'admin_movie' %}" class="btn btn-sm btn-outline-light">View All Movies</a>
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Genre</th>
+                        <th>IMDB</th>
+                        <th>TMDB</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for movie in latest_movies %}
+
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ movie.id }}</td>
+                        <td>{{ movie.title }}</td>
+
+                        <td>
+                            {% for genre in movie.genres.all %}
+                                <span class="badge bg-primary">{{ genre.name }}</span>
+                            {% empty %}
+                                -
+                            {% endfor %}
+                        </td>
+
+                        <td>{{ movie.imdb_id|default:"-" }}</td>
+                        <td>{{ movie.tmdb_id|default:"-" }}</td>
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="6" class="text-center">No movie available.</td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

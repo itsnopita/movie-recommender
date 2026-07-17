@@ -1,0 +1,128 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Genre Favorit{% endblock %}
+{% block page_title %}Genre Favorit{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'admin_recommendation' %}" class="btn btn-outline-light btn-sm mb-3">
+    <i class="bi bi-arrow-left"></i> Kembali
+</a>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Jumlah Genre — {{ display_name }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        {% for genre in genre_rows %}
+                        <th>{{ genre.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for genre in genre_rows %}
+                        <td>{{ genre.count }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            {% if top_genre %}
+                Rekomendasi Movie dengan Genre {{ top_genre.name }}
+            {% else %}
+                Belum Ada Genre Favorit
+            {% endif %}
+        </h5>
+    </div>
+    <div class="card-body">
+
+        <div class="table-toolbar">
+            <span></span>
+            <form method="get" class="search-box w-100">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Cari judul movie...">
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Judul</th>
+                        <th>Genre</th>
+                        <th>Rating rata-rata</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for movie in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                        <td>{{ movie.id }}</td>
+                        <td>{{ movie.title }}</td>
+                        <td>
+                            {% for genre in movie.genres.all %}
+                                <span class="badge bg-primary">{{ genre.name }}</span>
+                            {% empty %}-{% endfor %}
+                        </td>
+                        <td>
+                            {% if movie.avg_rating %}
+                                <i class="bi bi-star-fill text-warning"></i> {{ movie.avg_rating|floatformat:2 }}
+                            {% else %}-{% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center">User ini belum punya genre favorit (belum pernah rating film ≥ 4).</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.paginator.count %}
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <span class="text-muted small">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ total }} entries
+            </span>
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Previous</a>
+                        {% else %}
+                            <span class="page-link">Previous</span>
+                        {% endif %}
+                    </li>
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ query }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">Next</a>
+                        {% else %}
+                            <span class="page-link">Next</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

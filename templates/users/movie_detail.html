@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MovieHub | {{ movie.title }}{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <div class="container">
+        <div class="row g-5">
+
+            <!-- POSTER -->
+            <div class="col-lg-3 col-md-4">
+                <div class="detail-poster-wrap">
+                    {% if movie.poster %}
+                        <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="detail-poster" referrerpolicy="no-referrer">
+                    {% else %}
+                        <div class="detail-no-poster"><i class="bi bi-film"></i></div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- INFO -->
+            <div class="col-lg-9 col-md-8">
+
+                <h1 class="detail-title">{{ movie.title }}</h1>
+
+                <div class="detail-genres mb-3">
+                    {% for genre in movie.genres.all %}
+                        <span class="genre-badge">{{ genre.name }}</span>
+                    {% endfor %}
+                </div>
+
+                {% if movie.release_date %}
+                <p class="detail-meta">📅 {{ movie.release_date }}</p>
+                {% endif %}
+
+                <div class="detail-rating mb-3">
+                    <span>⭐</span>
+                    <span class="detail-rating-num" id="avgRatingText">
+                        {% if rating_count %}
+                            {{ avg_rating|floatformat:1 }} ({{ rating_count }} rating)
+                        {% else %}
+                            Belum ada rating
+                        {% endif %}
+                    </span>
+                    <span class="detail-rating-you ms-2" id="userRatingText" {% if not user_rating %}style="display:none;"{% endif %}>
+                        — rating kamu: <span id="userRatingValue">{{ user_rating.rating|floatformat:0 }}</span> ⭐
+                    </span>
+                </div>
+
+                <div class="detail-synopsis mb-4">
+                    <h5>Sinopsis</h5>
+                    <p>
+                        {% if movie.overview and movie.overview != "None" %}
+                            {{ movie.overview }}
+                        {% else %}
+                            <span class="detail-placeholder-text fst-italic">Sinopsis belum tersedia.</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="detail-actions mb-4">
+                    <button type="button" id="favBtn" class="btn-detail-fav {% if is_favorited %}is-active{% endif %}"
+                            data-url="{% url 'toggle_favorite' movie.pk %}">
+                        <i class="bi bi-heart-fill"></i> <span id="favBtnText">{% if is_favorited %}Favorited{% else %}Favorite{% endif %}</span>
+                    </button>
+                </div>
+
+                <!-- STEP CARD: BERIKAN RATING -->
+                <div class="action-card mb-4">
+                    <h5 class="action-card-title"><i class="bi bi-star-fill"></i> Berikan Rating</h5>
+                    <p class="action-card-subtitle">Berikan penilaianmu untuk film ini</p>
+
+                    <div class="star-picker" id="starPicker"
+                         data-url="{% url 'submit_rating' movie.pk %}"
+                         data-selected="{{ user_rating.rating|default_if_none:0|floatformat:0 }}">
+                        {% for i in "12345" %}
+                            <i class="bi bi-star star-icon" data-value="{{ i }}"></i>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="btn-submit-rating mt-3" id="submitRatingBtn" disabled>
+                        Submit Rating
+                    </button>
+
+                    <div class="action-alert action-alert-success mt-3" id="ratingSuccessAlert" style="display:none;">
+                        <i class="bi bi-check-circle-fill"></i> <span id="ratingSuccessText">Terima kasih! Rating kamu telah disimpan.</span>
+                    </div>
+                    <div class="action-alert action-alert-error mt-3" id="ratingErrorAlert" style="display:none;"></div>
+                </div>
+
+                <!-- STEP CARD: TAG FILM INI -->
+                <div class="action-card">
+                    <h5 class="action-card-title"><i class="bi bi-tag-fill"></i> Tag Film Ini</h5>
+                    <p class="action-card-subtitle">Tambahkan tag yang menggambarkan film ini</p>
+
+                    <form id="tagForm" class="tag-form" data-url="{% url 'add_tag' movie.pk %}">
+                        {% csrf_token %}
+                        <input type="text" name="tag" id="tagInput" class="tag-input"
+                               placeholder="Ketik tag dan tekan Enter" maxlength="150" required>
+                        <button type="submit" class="btn-tag-add">Add</button>
+                    </form>
+
+                    <div class="action-alert action-alert-error mt-3" id="tagErrorAlert" style="display:none;"></div>
+
+                    <div class="mt-3">
+                        <p class="action-card-label">Tag yang sudah diberikan:</p>
+                        <div class="tag-pill-list" id="tagList">
+                            {% for t in user_tags %}
+                                <span class="tag-pill" data-tag-id="{{ t.pk }}">
+                                    {{ t.tag }}
+                                    <button type="button" class="tag-pill-remove"
+                                            data-url="{% url 'delete_tag' movie.pk t.pk %}"
+                                            aria-label="Hapus tag">&times;</button>
+                                </span>
+                            {% endfor %}
+                        </div>
+                        <p class="detail-placeholder-text fst-italic mb-0" id="noTagsText" {% if user_tags %}style="display:none;"{% endif %}>
+                            Kamu belum menambahkan tag untuk film ini.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/movie_detail.js' %}"></script>
+{% endblock %}

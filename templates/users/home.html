@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MovieHub | Home{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section class="hero" id="hero">
+    <div class="container">
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                <i class="bi bi-camera-reels-fill me-1"></i>
+                Movie Recommendation System
+            </span>
+
+            <h1>
+                Temukan Film <br>
+                <span>Favoritmu</span>
+            </h1>
+
+            <p>
+                Berbagai jenis movie dengan pencarian yang cepat,
+                Explore sekarang.
+            </p>
+
+            <form class="search-box" method="GET" action="{% url 'home' %}">
+                <i class="bi bi-search"></i>
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ request.GET.q }}"
+                    placeholder="cari judul atau genre movie"
+                    autocomplete="off">
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="hero-button">
+                <a href="#movie" class="btn-movie">
+                    <i class="bi bi-play-circle-fill"></i>
+                    Lihat Movie
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     TOP RATED MOVIE
+============================================================ -->
+<section class="movie-section" id="movie">
+    <div class="container">
+
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Top Rated Movie</h2>
+                <div class="line"></div>
+            </div>
+            <a href="{% url 'movie_list' %}" class="btn-all">
+                Lihat Semua <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="movie-scroll-wrap">
+            <button type="button" class="scroll-arrow scroll-arrow-left" aria-label="Sebelumnya">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <div class="movie-scroll-row" id="movieScrollRow">
+                {% for movie in movies %}
+                <div class="movie-scroll-item">
+                    <div class="movie-card">
+                        <div class="movie-image">
+                            {% if movie.poster %}
+                                <img src="{{ movie.poster }}" alt="{{ movie.title }}" loading="lazy" referrerpolicy="no-referrer">
+                            {% else %}
+                                <div class="no-poster"><i class="bi bi-film"></i></div>
+                            {% endif %}
+                        </div>
+                        <div class="movie-info">
+                            <h5>{{ movie.title }}</h5>
+                            <div class="movie-bottom">
+                                <span class="movie-rating">
+                                    ⭐ {{ movie.avg_rating|floatformat:1|default:"-" }}
+                                </span>
+                                <a href="{% url 'movie_detail' movie.pk %}">Detail</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-movie">
+                    <i class="bi bi-film"></i>
+                    <h4>Belum ada movie.</h4>
+                    <p>Tambahkan data movie melalui halaman admin.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="scroll-arrow scroll-arrow-right" aria-label="Selanjutnya">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+
+    </div>
+</section>
+
+<!-- ============================================================
+     GENRE
+============================================================ -->
+<section class="genre-section" id="genre">
+    <div class="container">
+
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Jelajahi Genre</h2>
+                <div class="line"></div>
+            </div>
+        </div>
+
+        <div class="genre-grid">
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+                <span>Action</span>
+            </a>
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-emoji-smile-fill"></i>
+                </div>
+                <span>Comedy</span>
+            </a>
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </div>
+                <span>Horror</span>
+            </a>
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-heart-fill"></i>
+                </div>
+                <span>Romance</span>
+            </a>
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-eye-fill"></i>
+                </div>
+                <span>Thriller</span>
+            </a>
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-rocket-takeoff-fill"></i>
+                </div>
+                <span>Sci-Fi</span>
+            </a>
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <span>Fantasy</span>
+            </a>
+
+            <a href="#" class="genre-card">
+                <div class="genre-icon-wrap">
+                    <i class="bi bi-camera-reels-fill"></i>
+                </div>
+                <span>Drama</span>
+            </a>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ============================================================
+    ABOUT — Label "TENTANG KAMI" DIHAPUS, TAPI ADA UNDERLINE
+============================================================ -->
+<section class="about-home" id="about">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6">
+                <!-- SECTION HEADER DENGAN UNDERLINE SEPERTI GENRE -->
+                <div class="section-header-about">
+                    <h2>Mengapa <span class="text-purple">MovieHub</span>?</h2>
+                    <div class="line"></div>
+                </div>
+                
+                <p>
+                    MovieHub membantu pengguna menemukan film terbaik
+                    berdasarkan genre, rating, dan sistem rekomendasi cerdas.
+                    Dengan tampilan modern dan pencarian yang cepat,
+                    pengalaman menjelajahi film menjadi jauh lebih mudah.
+                </p>
+
+                <ul class="about-list">
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Rekomendasi Cerdas</strong>
+                            <span>Sistem rekomendasi berbasis preferensi dan rating</span>
+                        </div>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Genre Lengkap</strong>
+                            <span>Jelajahi ratusan film dari berbagai genre</span>
+                        </div>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Rating Film</strong>
+                            <span>Beri dan lihat rating film dari pengguna lain</span>
+                        </div>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>Favorite Movie</strong>
+                            <span>Simpan film favoritmu dalam satu tempat</span>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+
+            <div class="col-lg-6">
+                <div class="about-visual">
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Film Tersedia</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">20+</div>
+                            <div class="stat-label">Genre</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-label">Pengguna Aktif</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">4.9★</div>
+                            <div class="stat-label">Rating App</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     CONTACT — Dengan Deskripsi
+============================================================ -->
+<section class="contact-section" id="contact">
+    <div class="container">
+
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Contact</h2>
+                <div class="line"></div>
+            </div>
+        </div>
+
+        <!-- DESKRIPSI TENTANG MOVIEHUB -->
+        <p class="contact-description">
+            Temukan film favoritmu berdasarkan genre, rating dan sistem rekomendasi pintar.
+        </p>
+
+        <div class="row g-5 mt-2">
+
+            <!-- KIRI: Info -->
+            <div class="col-lg-4">
+
+                <div class="contact-info-list">
+                    <div class="contact-info-item">
+                        <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                        <span>Jl. Syekh Nawawi Al Bantani, Komplek Boru, Kota Serang, Banten</span>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                        <span>+6285714795220</span>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                        <span>info@moviehub.id</span>
+                    </div>
+                </div>
+
+                <div class="contact-social-title">Media Sosial</div>
+                <div class="contact-socials">
+                    <a href="#" class="social-btn instagram" aria-label="Instagram">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="#" class="social-btn facebook" aria-label="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="social-btn twitter" aria-label="Twitter">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- KANAN: Form hanya Email & Message -->
+            <div class="col-lg-8">
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="contact-success {% if message.tags == 'danger' or message.tags == 'error' %}contact-error{% endif %}">
+                        <i class="bi bi-check-circle-fill"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if request.user.is_authenticated %}
+                <form class="contact-form" method="POST" action="{% url 'contact' %}#contact">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="contact-label">Email</label>
+                            <input type="email" name="email" class="contact-input" placeholder="Email"
+                                   value="{{ request.user.email }}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="contact-label">Message</label>
+                            <textarea name="message" class="contact-input contact-textarea" placeholder="Message" rows="5" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn-contact-submit">
+                                Kirim Pesan
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+                {% else %}
+                <div class="contact-login-notice">
+                    <p>Silakan login terlebih dahulu untuk mengirim pesan ke developer.</p>
+                    <a href="{% url 'login' %}?next={{ request.path }}%23contact" class="btn-contact-submit">
+                        <i class="bi bi-box-arrow-in-right"></i> Login untuk Kirim Pesan
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+{% block extra_js %}
+<script>
+    (function () {
+        const row = document.getElementById('movieScrollRow');
+        const btnLeft = document.querySelector('.scroll-arrow-left');
+        const btnRight = document.querySelector('.scroll-arrow-right');
+        if (!row || !btnLeft || !btnRight) return;
+
+        function scrollAmount() {
+            const card = row.querySelector('.movie-scroll-item');
+            const cardWidth = card ? card.getBoundingClientRect().width + 16 : 200;
+            return cardWidth * 3;
+        }
+
+        btnLeft.addEventListener('click', () => {
+            row.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+        });
+        btnRight.addEventListener('click', () => {
+            row.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+        });
+    })();
+</script>
+{% endblock %}

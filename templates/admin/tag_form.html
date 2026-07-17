@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if tag %}Edit{% else %}Tambah{% endif %} Tag{% endblock %}
+{% block page_title %}{% if tag %}Edit Tag{% else %}Tambah Tag{% endif %}{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-body">
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Movie ID</label>
+                <input type="number" name="movie_id" class="form-control"
+                       value="{{ tag.movie_id|default:'' }}" required>
+                <small class="text-muted">Masukkan ID movie (lihat di menu Movie).</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">User ID</label>
+                <input type="number" name="user_id" class="form-control"
+                       value="{{ tag.user_id|default:'' }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tag</label>
+                <input type="text" name="tag" class="form-control"
+                       value="{{ tag.tag|default:'' }}" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{% url 'admin_tag' %}" class="btn btn-outline-light">Batal</a>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

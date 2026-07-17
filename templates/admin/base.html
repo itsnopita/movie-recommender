@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movie Recommender Admin{% endblock %}</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <i class="bi bi-film" style="font-size:22px;color:var(--admin-purple);"></i>
+            <h3>Recommender<br><span style="color:var(--admin-purple); font-weight:700;">System</span></h3>
+        </div>
+
+        <a href="{% url 'admin_profile_edit' %}" class="sidebar-profile">
+            {% if request.user.profile.photo %}
+                <img src="{{ request.user.profile.photo.url }}" alt="{{ request.user.username }}" class="avatar-img">
+            {% else %}
+                <i class="bi bi-person-circle"></i>
+            {% endif %}
+            <div>
+                <div class="sidebar-profile-name">{{ request.user.username }}</div>
+                <div class="sidebar-profile-role">Administrator</div>
+            </div>
+        </a>
+
+        <ul class="menu">
+
+            <li>
+                <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="bi bi-grid-fill"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'admin_movie' %}" class="{% if 'admin_movie' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="bi bi-film"></i>
+                    Movie
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'admin_tag' %}" class="{% if 'admin_tag' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="bi bi-tags-fill"></i>
+                    Tag
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'admin_rating' %}" class="{% if request.resolver_match.url_name == 'admin_rating' %}active{% endif %}">
+                    <i class="bi bi-star-fill"></i>
+                    Rate
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'admin_recommendation' %}" class="{% if 'admin_recommendation' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="bi bi-robot"></i>
+                    Recommendation
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'admin_message' %}" class="{% if 'admin_message' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="bi bi-envelope-fill"></i>
+                    Messages
+                </a>
+            </li>
+
+            <li class="logout">
+    <a href="{% url 'logout' %}">
+        <i class="bi bi-box-arrow-right"></i>
+        Logout
+    </a>
+</li>
+
+        </ul>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Navbar -->
+        <nav class="topbar">
+
+            <div>
+                <h4>{% block page_title %}Dashboard{% endblock %}</h4>
+            </div>
+
+            <a href="{% url 'admin_profile_edit' %}" class="admin-user">
+                {% if request.user.profile.photo %}
+                    <img src="{{ request.user.profile.photo.url }}" alt="{{ request.user.username }}" class="avatar-img avatar-img-sm">
+                {% else %}
+                    <i class="bi bi-person-circle"></i>
+                {% endif %}
+                {{ request.user.username }}
+            </a>
+
+        </nav>
+
+        <!-- Content -->
+        <div class="content">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} py-2">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="{% static 'js/admin.js' %}"></script>
+
+{% block extra_js %}
+{% endblock %}
+
+</body>
+</html>

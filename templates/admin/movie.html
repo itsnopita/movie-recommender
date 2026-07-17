@@ -1,0 +1,125 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Movie{% endblock %}
+{% block page_title %}Movie{% endblock %}
+
+{% block content %}
+
+<div class="card">
+
+    <div class="card-body">
+
+        <div class="table-toolbar">
+            <a href="{% url 'admin_movie_add' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Tambah Movie
+            </a>
+
+            <form method="get" class="search-box w-100">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search movie...">
+            </form>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Genre</th>
+                        <th>IMDB</th>
+                        <th>TMDB</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for movie in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                        <td>{{ movie.id }}</td>
+                        <td>{{ movie.title }}</td>
+                        <td>
+                            {% for genre in movie.genres.all %}
+                                <span class="badge bg-primary">{{ genre.name }}</span>
+                            {% empty %}-{% endfor %}
+                        </td>
+                        <td>{{ movie.imdb_id|default:"-" }}</td>
+                        <td>{{ movie.tmdb_id|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'admin_movie_edit' movie.id %}" class="btn btn-primary btn-sm-action" title="Edit">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <button type="button" class="btn btn-danger btn-sm-action"
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal{{ movie.id }}" title="Hapus">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+
+                            <div class="modal fade" id="deleteModal{{ movie.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            Hapus movie <strong>{{ movie.title }}</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-outline-light" data-bs-dismiss="modal">Batal</button>
+                                            <form method="post" action="{% url 'admin_movie_delete' movie.id %}">
+                                                {% csrf_token %}
+                                                <button class="btn btn-danger">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7" class="text-center">Belum ada movie.</td></tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <span class="text-muted small">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ total }} entries
+            </span>
+
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Previous</a>
+                        {% else %}
+                            <span class="page-link">Previous</span>
+                        {% endif %}
+                    </li>
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ query }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">Next</a>
+                        {% else %}
+                            <span class="page-link">Next</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

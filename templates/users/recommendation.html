@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MovieHub | Rekomendasi Saya{% endblock %}
+
+{% block content %}
+
+<section class="movie-section" style="padding-top: 140px;">
+    <div class="container">
+
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Rekomendasi Saya</h2>
+                <div class="line"></div>
+            </div>
+        </div>
+
+        <!-- Info strategi yang dipakai -->
+        <div class="reco-info-box mb-4">
+
+            {% if result.method == "user_baru" %}
+                <p class="mb-0">
+                    <i class="bi bi-stars text-warning"></i>
+                    Kamu belum pernah memberi rating, jadi kami tampilkan dulu film-film dengan
+                    <strong>rating tertinggi</strong>. Kasih rating beberapa film supaya rekomendasi ini
+                    makin sesuai sama selera kamu!
+                </p>
+
+            {% elif result.method == "rating_sekali" %}
+                <p class="mb-0">
+                    <i class="bi bi-stars text-warning"></i>
+                    Kamu baru memberi 1 rating{% if result.info %} untuk
+                    <strong>"{{ result.info.title }}"</strong>{% endif %}. Rekomendasi di bawah ini
+                    film-film dengan genre yang serupa. Kasih rating lebih banyak film supaya rekomendasinya
+                    makin akurat.
+                </p>
+
+            {% elif result.method == "hybrid" %}
+                <p class="mb-2">
+                    <i class="bi bi-stars text-warning"></i>
+                    Rekomendasi ini dihasilkan dari kombinasi:
+                    <strong>Content-Based</strong> (film dengan genre yang mirip kesukaanmu) dan
+                    <strong>Collaborative</strong> (film yang disukai user lain dengan pola rating serupa
+                    denganmu).
+                </p>
+                {% if result.info %}
+                <p class="mb-0">
+                    Genre favoritmu saat ini:
+                    {% for genre in result.info %}
+                        <span class="badge-genre">{{ genre.name }}</span>
+                    {% endfor %}
+                </p>
+                {% endif %}
+
+            {% elif result.method == "top_rated" %}
+                <p class="mb-0">
+                    <i class="bi bi-info-circle text-warning"></i>
+                    Belum ada film atau user lain yang cukup mirip dengan riwayat ratingmu, jadi kami
+                    tampilkan film dengan rating tertinggi sebagai gantinya. Terus kasih rating & tag ya!
+                </p>
+            {% endif %}
+
+            <p class="text-muted small mb-0 mt-2">
+                Total film yang sudah kamu beri rating: <strong>{{ rating_count }}</strong>
+            </p>
+        </div>
+
+        <div class="row g-4">
+            {% for movie in result.recommendations %}
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6">
+                <div class="movie-card">
+                    <div class="movie-image">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster }}" alt="{{ movie.title }}" loading="lazy" referrerpolicy="no-referrer">
+                        {% else %}
+                            <div class="no-poster"><i class="bi bi-film"></i></div>
+                        {% endif %}
+                    </div>
+                    <div class="movie-info">
+                        <h5>{{ movie.title }}</h5>
+                        <div class="movie-bottom">
+                            <span class="movie-rating">
+                                ⭐ {{ movie.avg_rating|floatformat:1|default:"-" }}
+                            </span>
+                            <a href="{% url 'movie_detail' movie.pk %}">Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-movie">
+                    <i class="bi bi-film"></i>
+                    <h4>Belum ada rekomendasi.</h4>
+                    <p>Coba beri rating atau tag ke beberapa film dulu.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
